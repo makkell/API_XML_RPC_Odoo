@@ -36,7 +36,7 @@ data = {
     'implied_ids': implied_ids,
     'trans_implied_ids': trans_implied_ids
 }
-with open('intern.json', 'w') as file:
+with open('intern_base_role.json', 'w') as file:
     json.dump(data, file)
 
 help_model = models.execute_kw(db, uid, password, 'res.users.role', 'fields_get', [], {'attributes': ['string', 'help', 'type']}) # Список полей модели
@@ -45,7 +45,7 @@ help_model = models.execute_kw(db, uid, password, 'res.users.role', 'fields_get'
 #     print(f"{key} : {value}")
 
 models.execute_kw(db, uid, password, 'res.users.role', 'create', [data]) # создание записи в модели  'model_access_ids': model_access_ids
-# ids = models.execute_kw(db, uid, password, 'res.users.role', 'search', [[['name', '=', 'Еблан']]], {'limit': 1})
+# ids = models.execute_kw(db, uid, password, 'res.users.role', 'search', [[['name', '=', 'name']]], {'limit': 1})
 # models.execute_kw(db, uid, password, 'res.users.role', 'write', [[ids[0]], data ])
 
 # print(help_model)

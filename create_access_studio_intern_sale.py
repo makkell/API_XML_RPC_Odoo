@@ -9,7 +9,7 @@ TOKEN = "2e2d522c71443b69cf13880aa246eacaa493ea6c" #токен  (необяза�
 
 path_json_data_for_role = 'intern_base_role.json'
 
-with open('intern.json', 'r') as file:
+with open('intern_sale_access_studio.json', 'r') as file:
     data = json.load(file)
 
 
@@ -19,4 +19,4 @@ uid = common.authenticate(db, username, password, {})
 
 models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
 
-models.execute_kw(db, uid, password, 'res.users.role', 'create', [data]) # создание роли 
+models.execute_kw(db, uid, password, 'access.management', 'create', [data]) # создание роли 
