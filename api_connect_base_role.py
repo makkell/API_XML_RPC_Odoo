@@ -20,7 +20,7 @@ uid = common.authenticate(db, username, password, {})
 
 models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
 
-ids = models.execute_kw(db, uid, password, 'res.users.role', 'search', [[['name', '=', 'Стажёр (Общий)']]], {'limit': 1})
+ids = models.execute_kw(db, uid, password, 'res.users.role', 'search', [[['name', '=', 'Стажер (склад+продажи)']]], {'limit': 1})
 
 [record] = models.execute_kw(db, uid, password, 'res.users.role', 'read', [ids])
 
