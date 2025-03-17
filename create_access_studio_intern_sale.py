@@ -1,4 +1,4 @@
-import json
+import yaml
 import xmlrpc.client
 
 # Настройки подключения
@@ -7,12 +7,12 @@ db = "mydb"  # Имя базы данных
 username = "admin"  # Логин пользователя
 password = "admin"  # Пароль пользователя
 
-# Путь к JSON-файлу с данными
-path_json_data_for_role = 'intern_base_role.json'
+# Путь к YAML-файлу с данными
+path_yaml_data_for_role = 'intern_sale_access_studio.yaml'
 
-# Чтение данных из JSON-файла
-with open('intern_sale_access_studio.json', 'r') as file:
-    data = json.load(file)
+# Чтение данных из YAML-файла
+with open(path_yaml_data_for_role, 'r') as file:
+    data = yaml.safe_load(file)
 
 # Подключение к серверу
 common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))

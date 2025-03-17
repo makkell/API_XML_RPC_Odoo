@@ -1,51 +1,40 @@
-url = "http://localhost:8069" 
+import yaml
+import xmlrpc.client
+
+# Настройки подключения
+url = "http://localhost:8069"
 db = "mydb"
 username = "admin"
 password = "admin"
-TOKEN = "2e2d522c71443b69cf13880aa246eacaa493ea6c"
 
-
-"""
-Я тут функционал щупаю и забираю данные 
-"""
-
-
-import xmlrpc.client
-import json
-
+# Подключение к серверу
 common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
-print(common.version())
+print("Odoo version:", common.version())
 
+# Аутентификация
 uid = common.authenticate(db, username, password, {})
+if not uid:
+    raise Exception("Authentication failed")
 
 models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
 
+# Поиск записи роли по имени
 ids = models.execute_kw(db, uid, password, 'res.users.role', 'search', [[['name', '=', 'Стажер (склад+продажи)']]], {'limit': 1})
 
+
+# Чтение данных записи
 [record] = models.execute_kw(db, uid, password, 'res.users.role', 'read', [ids])
+print("Record data:", record)
 
-print(record)
-
-model_access_ids = record['model_access_ids']
-implied_ids = record['implied_ids']
-trans_implied_ids = record['trans_implied_ids']
-
+# Формирование данных для YAML-файла
 data = {
-    'model_access_ids': model_access_ids, 
-    'name' : "Стажёр", 
-    'implied_ids': implied_ids,
-    'trans_implied_ids': trans_implied_ids
+    'name': record['name'],  # Добавляем название роли
+    'model_access_ids': record['model_access_ids'],
+    'implied_ids': record['implied_ids'],
+    'trans_implied_ids': record['trans_implied_ids']
 }
-with open('intern_base_role.json', 'w') as file:
-    json.dump(data, file)
 
-help_model = models.execute_kw(db, uid, password, 'res.users.role', 'fields_get', [], {'attributes': ['string', 'help', 'type']}) # Список полей модели
-
-# for key, value in help_model.items():
-#     print(f"{key} : {value}")
-
-models.execute_kw(db, uid, password, 'res.users.role', 'create', [data]) # создание записи в модели  'model_access_ids': model_access_ids
-# ids = models.execute_kw(db, uid, password, 'res.users.role', 'search', [[['name', '=', 'name']]], {'limit': 1})
-# models.execute_kw(db, uid, password, 'res.users.role', 'write', [[ids[0]], data ])
-
-# print(help_model)
+# Сохранение данных в YAML-файл
+with open('intern_base_role.yaml', 'w') as file:
+    yaml.dump(data, file, allow_unicode=True, sort_keys=False)
+print("Data saved to YAML file")

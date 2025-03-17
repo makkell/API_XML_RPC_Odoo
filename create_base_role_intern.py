@@ -1,22 +1,34 @@
-import json
+import yaml
 import xmlrpc.client
 
-url = "http://localhost:8069" # твой url
-db = "mydb" # твоя бд
+# Настройки подключения
+url = "http://localhost:8069"
+db = "mydb"
 username = "admin"
 password = "admin"
-TOKEN = "2e2d522c71443b69cf13880aa246eacaa493ea6c" #токен  (необязательно)
 
-path_json_data_for_role = 'intern_base_role.json'
+# Путь к YAML-файлу с данными
+path_yaml_data_for_role = 'intern_base_role.yaml'
 
-with open('intern.json', 'r') as file:
-    data = json.load(file)
+# Чтение данных из YAML-файла
+with open(path_yaml_data_for_role, 'r') as file:
+    data = yaml.safe_load(file)
 
-
+# Подключение к серверу
 common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
+print("Odoo version:", common.version())
 
+# Аутентификация
 uid = common.authenticate(db, username, password, {})
+if not uid:
+    raise Exception("Authentication failed")
 
 models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
 
-models.execute_kw(db, uid, password, 'res.users.role', 'create', [data]) # создание роли 
+# Создание записи
+try:
+    print("Creating record with data:", data)
+    new_record_id = models.execute_kw(db, uid, password, 'res.users.role', 'create', [data])
+    print(f"Record created successfully with ID: {new_record_id}")
+except xmlrpc.client.Fault as e:
+    print(f"Error creating record: {e.faultString}")

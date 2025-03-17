@@ -1,11 +1,11 @@
-import json
+import yaml
 import xmlrpc.client
 
 # Настройки подключения
-url = "http://localhost:8069"  # URL сервера Odoo
-db = "mydb"  # Имя базы данных
-username = "admin"  # Логин пользователя
-password = "admin"  # Пароль пользователя
+url = "http://localhost:8069"
+db = "mydb"
+username = "admin"
+password = "admin"
 
 # Подключение к серверу
 common = xmlrpc.client.ServerProxy('{}/xmlrpc/2/common'.format(url))
@@ -19,9 +19,7 @@ if not uid:
 models = xmlrpc.client.ServerProxy('{}/xmlrpc/2/object'.format(url))
 
 # Поиск записи
-ids = models.execute_kw(db, uid, password, 'access.management', 'search', [[['name', '=', 'Стажер (склад)']]])
-if not ids:
-    raise Exception("No records found with name 'Тест api'")
+ids = models.execute_kw(db, uid, password, 'access.management', 'search', [[['name', '=', 'Стажер (продажи)']]])
 
 print("Found record IDs:", ids)
 
@@ -31,6 +29,7 @@ print("Record data:", record)
 
 # Формирование данных для обновления
 data = {
+    'name': record['name'],  # Добавляем название роли
     'hide_menu_ids': record['hide_menu_ids'],
     'hide_field_ids': record['hide_field_ids'],
     'remove_action_ids': record['remove_action_ids'],
@@ -52,10 +51,10 @@ data = {
     'is_apply_on_without_company': record['is_apply_on_without_company']
 }
 
-# Сохранение данных в JSON-файл
-with open('intern_sale_access_studio.json', 'w') as file:
-    json.dump(data, file)
-print("Data saved to JSON file")
+# Сохранение данных в YAML-файл
+with open('intern_sale_access_studio.yaml', 'w') as file:
+    yaml.dump(data, file, allow_unicode=True, sort_keys=False)
+print("Data saved to YAML file")
 
 # # Обновление записи
 # try:
